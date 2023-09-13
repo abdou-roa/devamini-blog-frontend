@@ -1,3 +1,4 @@
+import { Paper } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 
 //my imports 
@@ -17,11 +18,11 @@ export default function Post() {
         }
         fetchPost()
     }, [])
-    //this page must be protected by auth ofc
-    //then it will contain two form fields (post_title, category_id (a select input as a separate component which will render categories from an api endpoint) and post_image as a simple text field)
-    //then a texteditor field
-    //i will handle all of this using react useState hook (post_title, post_body, post_body, user_id #from local storage, )
+    /**this page must be protected by auth ofc
+    then it will contain two form fields (post_title, category_id (a select input as a separate component which will render categories from an api endpoint) and post_image as a simple text field)
+    then a texteditor field (draftjs)
+    i will handle all of this using react useState hook (post_title, post_body, post_body, user_id #from local storage, ) **/
   return (
-    <div>post</div>
+    <div>post {postId}</div>
   )
 }
