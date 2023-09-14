@@ -27,7 +27,6 @@ function App() {
             <DashBoard />
           </ProtectedRoute>
         }/>
-          
       </Routes>
     </BrowserRouter>
   );

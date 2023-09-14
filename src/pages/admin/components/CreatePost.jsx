@@ -11,8 +11,8 @@ import { convertToHTML } from 'draft-convert';
 import DOMPurify  from 'dompurify';
 
 
-
 export default function CreatePost() {
+
     const token = localStorage.getItem('access_token')
     //states
     const [editorState, setEditorState] = useState(
@@ -22,7 +22,7 @@ export default function CreatePost() {
     const [convertedContent, setConvertedContent] = useState(null)
     const [postTitle, setPostTitle] = useState('')
     const [postCategory, setPostCategory] = useState(2)
-    const [postImage, setPostImage] = useState('image')
+    const [postImage, setPostImage] = useState(null)
     useEffect(()=>{
               //fetch categories
       const fetchCategories = async ()=>{
@@ -47,22 +47,27 @@ export default function CreatePost() {
         return {
           __html: DOMPurify.sanitize(html)
         }
-      }
+    }
+
+    const handleUpload = (e)=>{
+        const file = e.target.files[0]
+        setPostImage(file)
+    }
 
     const handleSubmit = ()=>{
         const submitPost = async ()=>{
+            const formData = new FormData()
+            formData.append('post_title', postTitle)
+            formData.append('post_body', convertedContent)
+            formData.append('category_id', postCategory)
+            formData.append('post_image', postImage)
+
             const response = await fetch('http://localhost:8000/api/add/post',{
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization' : `Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    post_title: postTitle,
-                    post_body: convertedContent,
-                    post_image: postImage,
-                    category_id: postCategory
-                })
+                body: formData
             })
             if(response.ok){
                 const data = response.json()
@@ -70,13 +75,10 @@ export default function CreatePost() {
                 alert('post created successfully!')
             }else{
                 console.log('madazetch l post abbana')
-                alert('post created successfully!')
+                alert('nop')
             }
         }
         submitPost()
-    }
-    const handleChange = ()=>{
-        console.log('hello')
     }
 
   return (
@@ -129,7 +131,15 @@ export default function CreatePost() {
                         editorClassName="editor-class"
                         toolbarClassName="toolbar-class"
                     />
+                </Box> 
+
+                <Box sx={{
+                    margin: '3rem auto',
+                    width: '75%',
+                    }}>                    
+                        <input type='file' onChange={handleUpload}/>            
                 </Box>
+
                 <Box sx={{
                     margin: '0rem auto',
                     width: '75%',
