@@ -95,27 +95,31 @@ export default function EditPost() {
     const handleSubmit = (e)=>{
         e.preventDefault()
         const submitPost = async ()=>{
-            const formData = new FormData()
-            formData.append('post_title', postTitle)
-            formData.append('post_body', convertedContent)
-            formData.append('category_id', postCategory)
-            formData.appends('post_image', postImage)
-            const response = await fetch(`http://127.0.0.1:8000/api/update/post/${postId}`,{
-                method: 'PUT',
-                headers: {
-                    'Authorization' : `Bearer ${token}`
-                },
-                body: formData
-            })
-            
-            if(response.ok){
-                const data = response.json()
-                console.log(data)
-                alert('post edited successfully!')
-            }else{
-                console.log('post wasn\'t edited successfully')
-                alert('nop')
-            }
+            try{
+                const formData = new FormData()
+                formData.append('post_title', postTitle)
+                formData.append('post_body', convertedContent)
+                formData.append('category_id', postCategory)
+                formData.append('post_image', postImage)
+                const response = await fetch(`http://127.0.0.1:8000/api/update/post/${postId}`,{
+                    method: 'PUT',
+                    headers: {
+                        'Authorization' : `Bearer ${token}`
+                    },
+                    body: formData
+                })
+                
+                if(response.ok){
+                    const data = response.json()
+                    console.log(data)
+                    alert('post edited successfully!')
+                }else{
+                    console.log('post wasn\'t edited successfully')
+                    //alert('nop')
+                }
+        }catch(error){
+            console.log(error)
+        }
         }
         submitPost()
     }
