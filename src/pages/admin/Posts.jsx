@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function Posts() {
+    const token = localStorage.getItem('access_token')
     const [fetchedPosts, setFetchedPosts]=useState([])
     const [nextPage, setNextpage]=useState(2)
+    const [currentPost, setCurrentPost] = useState(0)
     const navigate = useNavigate()
 
     useEffect(()=>{
@@ -38,7 +40,20 @@ export default function Posts() {
     const handleLoadMore = ()=>{
         setNextpage(nextPage+1)
     }
-
+    const deletePost = ()=>{
+        const deletePOST = async ()=>{
+            const response = await fetch(`http://127.0.0.1:8000/api/delete/post/${currentPost}`,{
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+        } 
+        deletePOST()
+        setFetchedPosts(prevposts=>{
+            return prevposts.filter(post=>post.id !== currentPost)
+        })
+    }
   return (
     <>
     <Paper elevation={3} sx={{
@@ -64,7 +79,7 @@ export default function Posts() {
                             <TableCell>{post.user_id}</TableCell>
                             <TableCell>
                                 <Button onClick={()=>{navigate(`/admin/dashboard/editPost/${post.id}`)}}>Edit</Button>
-                                <Button>Delete</Button>
+                                <Button onClick={deletePost} onMouseOver={()=>setCurrentPost(post.id)}>Delete</Button>
                             </TableCell>
                         </TableRow>
                     )
