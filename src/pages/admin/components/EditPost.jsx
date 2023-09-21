@@ -104,7 +104,8 @@ export default function EditPost() {
                 const response = await fetch(`http://127.0.0.1:8000/api/update/post/${postId}`,{
                     method: 'PUT',
                     headers: {
-                        'Authorization' : `Bearer ${token}`
+                        'Authorization' : `Bearer ${token}`,
+                        'Content-Type': 'application/json',
                     },
                     body: formData
                 })
