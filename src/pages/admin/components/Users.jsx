@@ -1,52 +1,78 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-
-function createData(name, calories, fat, carbs, protein) {
-return { name, calories, fat, carbs, protein };
-}
+import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Select, MenuItem } from '@mui/material'
   
-const rows = [
-createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-createData('Eclair', 262, 16.0, 24, 6.0),
-createData('Cupcake', 305, 3.7, 67, 4.3),
-createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
 export default function Users() {
-//states 
-const [users, setUsers] = useState([])
-const [currentPage, setCurrentPage] = useState(2)
-const token = localStorage.getItem('access_token')
-const handleLoadMore = ()=>{
-    setCurrentPage(currentPage+1)
-    const fetchUsers = async ()=>{
-        const usersResp = await fetch(`http://localhost:8000/api/users?page=${currentPage}`,{
-            headers: {
-                'Authorization' : `Bearer ${token}`
-            }
-        })
-        const data = await usersResp.json()
-        console.log(data.data)
-        setUsers(data.data)
+  //get auth token
+  const token = localStorage.getItem('access_token')
+  //states 
+  const [users, setUsers] = useState([])
+  const [currentPage, setCurrentPage] = useState(2)
+  const [roles, setRoles] = useState([])
+  const [currentUser, setCurrentUser] = useState(0)
+  //load more users in the list
+  const handleLoadMore = ()=>{
+      setCurrentPage(currentPage+1)
+      const fetchUsers = async ()=>{
+          const usersResp = await fetch(`http://localhost:8000/api/users?page=${currentPage}`,{
+              headers: {
+                  'Authorization' : `Bearer ${token}`
+              }
+          })
+          const data = await usersResp.json()
+          console.log(data.data)
+          setUsers(data.data)
+      }
+      fetchUsers()
+  }
+  //fetch the first set of users 
+  useEffect(()=>{
+      const fetchUsers = async ()=>{
+          const userResp = await fetch(`http://localhost:8000/api/users`,{
+              headers: {
+                  'Authorization': `Bearer ${token}`
+              }
+          })
+          const data = await userResp.json()
+          setUsers(data.data)
+      }
+      fetchUsers()
+  }, [])
+//fetch roles
+  useEffect(()=>{
+    const fetchRoles = async ()=>{
+      const response = await fetch('http://127.0.0.1:8000/api/roles',{
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if(response.ok){
+        const data = await response.json()
+        const roles = data.data
+        setRoles(roles)
+      }
     }
-    fetchUsers()
-}
+    fetchRoles()
+  },[])
 
-useEffect(()=>{
-    const fetchUsers = async ()=>{
-        const userResp = await fetch(`http://localhost:8000/api/users`,{
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+  const setUserRole = (e)=>{
+    const roleid = e.target.value
+    const userId = currentUser
+    const asignRole = async ()=>{
+      const response = await fetch(`http://127.0.0.1:8000/api/asign/role/${userId}`,{
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'id': roleid
         })
-        const data = await userResp.json()
-        setUsers(data.data)
+      })
+      const data = await response.json()
+      console.log(data)
     }
-    fetchUsers()
-}, [])
-  
-//?page=${currentPage}
-
+    asignRole()
+  }
   return (
     <Paper elevation={3}>
         <TableContainer component={Paper}>
@@ -60,16 +86,41 @@ useEffect(()=>{
           </TableRow>
         </TableHead>
         <TableBody>
-          {users.map((user) => (
-            <TableRow
+          {users.map((user) => {
+            return (
+              <TableRow
               key={user.id}
             >
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.email}</TableCell>
+              <TableCell>
+              <Select 
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={user.role}
+                    label="Roles"
+                    onMouseOver={()=>{
+                      console.log(user.id)
+                      setCurrentUser(user.id)
+                    }}
+                    onChange={setUserRole}
+                    sx={{
+                        width: '10rem',
+                        marginX: '1rem',
+                    }}
+                    >
+                        {roles.map((role)=>{
+                            return (
+                                <MenuItem key={parseInt(role.id)} value={parseInt(role.id)}>{role.name}</MenuItem>
+                        )}
+                        )}  
+                    </Select>
+              </TableCell>
+              <TableCell>
+                <Button>delete</Button>
+              </TableCell>
             </TableRow>
-          ))}
+          )})}
         </TableBody>
       </Table>
       <Button onClick={handleLoadMore}>Load More</Button>

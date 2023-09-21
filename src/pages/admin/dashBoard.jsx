@@ -24,6 +24,7 @@ import Posts from './Posts';
 import Post from './components/Post';
 import Users from './components/Users';
 import CreatePost from './components/CreatePost';
+import EditPost from './components/EditPost';
 
 const drawerWidth = 240;
 
@@ -193,6 +194,7 @@ export default function DashBoard() {
                 <Route path='post/:postId' element={<Post/>}/>
                 <Route path='users' element={<Users/>}/>
                 <Route path='createPost' element={<CreatePost/>}/>
+                <Route path='editPost/:postId' element={<EditPost/>}/>
               </Routes>
               <Outlet/>
             </Container>
