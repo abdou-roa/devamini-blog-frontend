@@ -74,6 +74,7 @@ export default function EditPost() {
       }
       fetchCategories()
     }, [])
+
     
     useEffect(() => {
         let html = convertToHTML(editorState.getCurrentContent());
@@ -96,18 +97,23 @@ export default function EditPost() {
         e.preventDefault()
         const submitPost = async ()=>{
             try{
-                const formData = new FormData()
-                formData.append('post_title', postTitle)
-                formData.append('post_body', convertedContent)
-                formData.append('category_id', postCategory)
-                formData.append('post_image', postImage)
+                // const formData = new FormData()
+                // formData.append('_method', 'PUT')
+                // formData.append('post_title', postTitle)
+                // formData.append('post_body', convertedContent)
+                // formData.append('category_id', postCategory)
+                // formData.append('post_image', postImage)
                 const response = await fetch(`http://127.0.0.1:8000/api/update/post/${postId}`,{
-                    method: 'PUT',
+                    method: 'put',
                     headers: {
                         'Authorization' : `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
-                    body: formData
+                    body: JSON.stringify({
+                        'post_title': postTitle,
+                        'post_body' : convertedContent,
+                        'category_id' : postCategory
+                    })
                 })
                 
                 if(response.ok){

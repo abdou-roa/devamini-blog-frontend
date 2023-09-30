@@ -73,6 +73,25 @@ export default function Users() {
     }
     asignRole()
   }
+  
+  const  deleUser = ()=>{
+    const userId = currentUser
+    const deleteUser = async ()=>{
+      const response = await  fetch(`http://127.0.0.1:8000/api/delete/user/${userId}`,{
+        method: 'DELETE',
+        headers:  {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
+      })
+      const data = response.json()
+      console.log(data)
+    }
+    deleteUser()
+    setUsers(prevState=>{
+      return prevState.filter(user=>user.id !=  userId)
+    })
+  }
   return (
     <Paper elevation={3}>
         <TableContainer component={Paper}>
@@ -117,7 +136,14 @@ export default function Users() {
                     </Select>
               </TableCell>
               <TableCell>
-                <Button>delete</Button>
+                <Button 
+                  onClick={deleUser}                     
+                  onMouseOver={()=>{
+                  console.log(user.id)
+                  setCurrentUser(user.id)
+                }}>
+                      delete
+                      </Button>
               </TableCell>
             </TableRow>
           )})}
